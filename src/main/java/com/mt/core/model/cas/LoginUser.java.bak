@@ -1,0 +1,56 @@
+package com.mt.model.cas;
+
+import java.time.LocalDateTime;
+
+import org.springframework.beans.BeanUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walsin.model.dto.UserDTO;
+
+public class LoginUser extends UserDTO {
+
+	private static final long serialVersionUID = 1L;
+
+	private String loginIP; // 登入 IP
+	private LocalDateTime loginTime; // 登入時間
+
+	public LoginUser() {
+	}
+
+	public LoginUser(UserDTO user) {
+		BeanUtils.copyProperties(user, this);
+	}
+
+	public String getLoginIP() {
+		return loginIP;
+	}
+
+	public void setLoginIP(String loginIP) {
+		this.loginIP = loginIP;
+	}
+
+	public LocalDateTime getLoginTime() {
+		return loginTime;
+	}
+
+	public void setLoginTime(LocalDateTime loginTime) {
+		this.loginTime = loginTime;
+	}
+
+	/**
+	 * 將本身物件轉為 JSON 格式
+	 * 
+	 * @return
+	 */
+	public String toJsonString() {
+		ObjectMapper mapper = new ObjectMapper();
+
+		try {
+			return mapper.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

@@ -1,0 +1,35 @@
+package com.mt.model.audit;
+
+import java.util.Optional;
+
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.walsin.model.cas.LoginUser;
+import com.walsin.model.cas.WalsinUserDetails;
+
+public class EntitySaverAuditor implements AuditorAware<String> {
+
+	@Override
+	public Optional<String> getCurrentAuditor() {
+		SecurityContext ctx = SecurityContextHolder.getContext();
+
+		if (ctx == null || ctx.getAuthentication() == null || ctx.getAuthentication().getPrincipal() == null) {
+			return null;
+		}
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		if (principal instanceof WalsinUserDetails) { // 由 CAS 登入
+			WalsinUserDetails userDetails = (WalsinUserDetails) principal;
+			LoginUser user = userDetails.getLoginUser();
+
+			return Optional.ofNullable((String) user.getEmpId());
+		} else { // 使用 API_USER 身份
+			UserDetails userDetails = (UserDetails) principal;
+			return Optional.ofNullable(userDetails.getUsername());
+		}
+	}
+}
